@@ -1,0 +1,9 @@
+{
+  "apiKey": "DUMMY_KEY",
+  "authDomain": "sjyro-dummy.firebaseapp.com",
+  "projectId": "sjyro-dummy",
+  "storageBucket": "sjyro-dummy.appspot.com",
+  "messagingSenderId": "12345678",
+  "appId": "1:12345678:web:12345",
+  "firestoreDatabaseId": "(default)"
+}

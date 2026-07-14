@@ -1,0 +1,6 @@
+{
+  "name": "SJYRO Luxury Streetwear",
+  "description": "Premium luxury fashion streetwear brand. Crafting oversized hoodies, minimalist t-shirts, and limited edition drops.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

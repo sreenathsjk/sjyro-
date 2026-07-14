@@ -1,0 +1,64 @@
+{
+  "entities": {
+    "products": {
+      "title": "Product",
+      "description": "Premium luxury fashion streetwear products in the SJYRO catalog",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "originalPrice": { "type": "number" },
+        "description": { "type": "string" },
+        "fabricDetails": { "type": "string" },
+        "careInstructions": { "type": "string" },
+        "sizes": { "type": "array" },
+        "stock": { "type": "integer" },
+        "rating": { "type": "number" }
+      },
+      "required": ["id", "name", "category", "price", "stock"]
+    },
+    "orders": {
+      "title": "Order",
+      "description": "User purchases made on SJYRO.com",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string" },
+        "subtotal": { "type": "number" },
+        "gst": { "type": "number" },
+        "shipping": { "type": "number" },
+        "discount": { "type": "number" },
+        "total": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "paymentStatus": { "type": "string" },
+        "orderStatus": { "type": "string" }
+      },
+      "required": ["id", "date", "subtotal", "gst", "total", "paymentMethod", "paymentStatus", "orderStatus"]
+    },
+    "newsletters": {
+      "title": "Newsletter Subscription",
+      "description": "Subscriber email addresses for the legacy drop circle",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" }
+      },
+      "required": ["email"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "products",
+      "description": "Read-only for guests, writeable only for authenticated managers"
+    },
+    "/orders/{orderId}": {
+      "schema": "orders",
+      "description": "Readable and writeable by order author or admin"
+    },
+    "/newsletters/{emailId}": {
+      "schema": "newsletters",
+      "description": "Writeable by anyone to subscribe"
+    }
+  }
+}
