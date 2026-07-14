@@ -22,6 +22,7 @@ import {
 import firebaseConfig from '../../firebase-applet-config.json';
 import { Product, Order, Review } from '../types';
 import { cleanProduct, cleanImageUrl } from './driveImageHelper';
+import { mockProducts } from '../db/mockData';
 
 // Detect if real Firebase credentials are provided
 const isRealFirebase = firebaseConfig && firebaseConfig.apiKey !== 'DUMMY_KEY';
@@ -145,13 +146,43 @@ export const dbService = {
     try {
       const response = await fetch('/api/products');
       if (response.ok) {
-        const prods = await response.json();
-        return prods.map(cleanProduct);
+        const text = await response.text();
+        // Check if response is HTML (which happens on static servers like Vercel with SPA fallback)
+        if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+          throw new Error('Received HTML response instead of JSON. Frontend probably deployed without a running backend server.');
+        }
+        const prods = JSON.parse(text);
+        if (Array.isArray(prods) && prods.length > 0) {
+          return prods.map(cleanProduct);
+        }
       }
     } catch (err) {
-      console.warn('API fetch failed, falling back to local simulation:', err);
+      console.warn('API fetch failed or returned non-JSON, checking other sources:', err);
     }
-    return [];
+
+    // Fallback 1: Try real client-side Firestore if available
+    if (isRealFirebase && db) {
+      try {
+        const colRef = collection(db, 'products');
+        const snapshot = await getDocs(colRef);
+        const list: Product[] = [];
+        snapshot.forEach(docSnap => {
+          if (docSnap.exists()) {
+            list.push(cleanProduct(docSnap.data() as Product));
+          }
+        });
+        if (list.length > 0) {
+          console.log(`Fetched ${list.length} products directly from Firestore client-side`);
+          return list;
+        }
+      } catch (fireErr) {
+        console.error('Client-side Firestore products fetch failed:', fireErr);
+      }
+    }
+
+    // Fallback 2: Client-side high-fidelity mock data (guarantees products always appear)
+    console.log('Falling back to high-fidelity mock data for products');
+    return mockProducts.map(cleanProduct);
   },
 
   async addProduct(product: Product): Promise<Product> {

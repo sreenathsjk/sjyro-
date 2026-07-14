@@ -78,6 +78,7 @@ export const mockProducts: Product[] = [
     rating: 5.0,
     isBestSeller: true,
     isTrending: true,
+    isLimitedDrop: true,
     features: ['VK18 Silhouette Back Graphic', '480GSM Heavyweight French Terry', 'Snug Double-Lined Hood', 'Ribbed Cuffs & Hem'],
     estimatedDelivery: '2-4 Business Days',
     reviews: [
