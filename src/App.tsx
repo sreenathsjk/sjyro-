@@ -136,15 +136,27 @@ export default function App() {
   useEffect(() => {
     loadCatalog();
     
-    // Load local storage items
-    const savedCart = localStorage.getItem('sjyro_cart_cache');
-    if (savedCart) setCart(JSON.parse(savedCart));
+    // Load local storage items safely
+    try {
+      const savedCart = localStorage.getItem('sjyro_cart_cache');
+      if (savedCart && savedCart !== 'undefined') setCart(JSON.parse(savedCart));
+    } catch (e) {
+      console.error('Failed to parse saved cart:', e);
+    }
 
-    const savedWishlist = localStorage.getItem('sjyro_wishlist_cache');
-    if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+    try {
+      const savedWishlist = localStorage.getItem('sjyro_wishlist_cache');
+      if (savedWishlist && savedWishlist !== 'undefined') setWishlist(JSON.parse(savedWishlist));
+    } catch (e) {
+      console.error('Failed to parse saved wishlist:', e);
+    }
 
-    const currentUser = dbService.getCurrentUser();
-    if (currentUser) setUser(currentUser);
+    try {
+      const currentUser = dbService.getCurrentUser();
+      if (currentUser) setUser(currentUser);
+    } catch (e) {
+      console.error('Failed to load current user:', e);
+    }
 
     // Scroll tracker
     const handleScroll = () => {

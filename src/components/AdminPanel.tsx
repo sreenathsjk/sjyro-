@@ -308,17 +308,25 @@ export default function AdminPanel({ allProducts, onRefreshData }: AdminPanelPro
     }
   };
 
-  // ANALYTICS STATS ENGINE
-  const totalSalesRevenue = orders.reduce((sum, o) => sum + (o.orderStatus !== 'Returned' ? o.total : 0), 0);
-  const averageOrderValue = orders.length > 0 ? parseFloat((totalSalesRevenue / orders.length).toFixed(2)) : 0;
-  const totalInventoryUnits = allProducts.reduce((sum, p) => sum + p.stock, 0);
+  // ANALYTICS STATS ENGINE with maximum safety guards
+  const totalSalesRevenue = (orders || []).reduce((sum, o) => {
+    if (!o) return sum;
+    const status = o.orderStatus || 'Pending';
+    const total = typeof o.total === 'number' ? o.total : 0;
+    return sum + (status !== 'Returned' ? total : 0);
+  }, 0);
+  const averageOrderValue = (orders || []).length > 0 ? parseFloat((totalSalesRevenue / orders.length).toFixed(2)) : 0;
+  const totalInventoryUnits = (allProducts || []).reduce((sum, p) => sum + (p && typeof p.stock === 'number' ? p.stock : 0), 0);
 
-  // Filter Catalog Items
-  const filteredProducts = allProducts.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter Catalog Items with comprehensive fallback protection
+  const filteredProducts = (allProducts || []).filter(p => {
+    if (!p) return false;
+    const nameStr = (p.name || '').toLowerCase();
+    const idStr = (p.id || '').toLowerCase();
+    const catStr = (p.category || '').toLowerCase();
+    const q = (searchQuery || '').toLowerCase();
+    return nameStr.includes(q) || idStr.includes(q) || catStr.includes(q);
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28 flex flex-col gap-8 select-none">
@@ -620,26 +628,26 @@ export default function AdminPanel({ allProducts, onRefreshData }: AdminPanelPro
                     <tr key={o.id} className="hover:bg-neutral-50/50 transition-colors">
                       <td className="p-4 font-mono text-[10px] font-bold">{o.id}</td>
                       <td className="p-4">
-                        <div className="font-bold">{o.shippingAddress.fullName}</div>
-                        <div className="text-[10px] text-black/40 font-mono truncate max-w-[120px]">{o.shippingAddress.email}</div>
+                        <div className="font-bold">{o.shippingAddress?.fullName || 'Anonymous Client'}</div>
+                        <div className="text-[10px] text-black/40 font-mono truncate max-w-[120px]">{o.shippingAddress?.email || 'N/A'}</div>
                       </td>
                       <td className="p-4 text-black/60 truncate max-w-[180px]">
-                        {o.items.map(item => `${item.product.name} (x${item.quantity})`).join(', ')}
+                        {(o.items || []).map(item => `${item?.product?.name || 'Item'} (x${item?.quantity || 1})`).join(', ') || 'Empty Order'}
                       </td>
-                      <td className="p-4 font-bold font-numbers-lux">{formatPrice(o.total)}</td>
+                      <td className="p-4 font-bold font-numbers-lux">{formatPrice(o.total || 0)}</td>
                       <td className="p-4">
                         <span className={`px-2 py-0.5 rounded-sm text-[9px] font-bold font-button-lux tracking-wider uppercase ${
                           o.orderStatus === 'Delivered' ? 'bg-green-50 text-green-700 border border-green-100' :
                           o.orderStatus === 'Returned' ? 'bg-red-50 text-red-700 border border-red-100' :
                           'bg-amber-50 text-amber-700 border border-amber-100 animate-pulse'
                         }`}>
-                          {o.orderStatus}
+                          {o.orderStatus || 'Processing'}
                         </span>
                       </td>
                       <td className="p-4 text-right">
-                        {o.orderStatus !== 'Returned' && o.orderStatus !== 'Delivered' && (
+                        {(o.orderStatus || 'Processing') !== 'Returned' && (o.orderStatus || 'Processing') !== 'Delivered' && (
                           <select 
-                            value={o.orderStatus}
+                            value={o.orderStatus || 'Processing'}
                             onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
                             className="text-[9px] font-bold font-button-lux uppercase tracking-wider bg-white border border-black/10 rounded-sm p-1.5 focus:outline-none focus:border-black"
                           >

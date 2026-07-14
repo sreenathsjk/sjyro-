@@ -131,8 +131,13 @@ export const dbService = {
         };
       }
     }
-    const saved = localStorage.getItem('sjyro_auth_user');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('sjyro_auth_user');
+      return (saved && saved !== 'undefined') ? JSON.parse(saved) : null;
+    } catch (e) {
+      console.error('Failed to parse cached auth user:', e);
+      return null;
+    }
   },
 
   // --- PRODUCTS MANAGEMENT ---
@@ -159,16 +164,7 @@ export const dbService = {
       });
       if (response.ok) {
         const savedProd = await response.json();
-        const cleanedSaved = cleanProduct(savedProd);
-        // If real firebase is running, sync in background
-        if (isRealFirebase && db) {
-          try {
-            await setDoc(doc(db, 'products', cleanedSaved.id), cleanedSaved);
-          } catch (fireErr) {
-            handleFirestoreError(fireErr, OperationType.WRITE, `products/${cleanedSaved.id}`);
-          }
-        }
-        return cleanedSaved;
+        return cleanProduct(savedProd);
       }
     } catch (err) {
       console.error('Failed to create product via API:', err);
@@ -192,15 +188,7 @@ export const dbService = {
       });
       if (response.ok) {
         const updated = await response.json();
-        const cleanedUpdated = cleanProduct(updated);
-        if (isRealFirebase && db) {
-          try {
-            await updateDoc(doc(db, 'products', id), cleanedUpdated as any);
-          } catch (fireErr) {
-            handleFirestoreError(fireErr, OperationType.UPDATE, `products/${id}`);
-          }
-        }
-        return cleanedUpdated;
+        return cleanProduct(updated);
       }
     } catch (err) {
       console.error('Failed to update product via API:', err);
@@ -214,13 +202,6 @@ export const dbService = {
         method: 'DELETE',
       });
       if (response.ok) {
-        if (isRealFirebase && db) {
-          try {
-            await deleteDoc(doc(db, 'products', id));
-          } catch (fireErr) {
-            handleFirestoreError(fireErr, OperationType.DELETE, `products/${id}`);
-          }
-        }
         return true;
       }
     } catch (err) {
@@ -239,17 +220,7 @@ export const dbService = {
         body: JSON.stringify(reviewPayload),
       });
       if (response.ok) {
-        const { review, product } = await response.json();
-        if (isRealFirebase && db) {
-          try {
-            await updateDoc(doc(db, 'products', productId), {
-              reviews: product.reviews,
-              rating: product.rating,
-            });
-          } catch (fireErr) {
-            handleFirestoreError(fireErr, OperationType.UPDATE, `products/${productId}`);
-          }
-        }
+        const { review } = await response.json();
         return review;
       }
     } catch (err) {
@@ -289,15 +260,7 @@ export const dbService = {
         body: JSON.stringify(order),
       });
       if (response.ok) {
-        const savedOrder = await response.json();
-        if (isRealFirebase && db) {
-          try {
-            await setDoc(doc(db, 'orders', savedOrder.id), savedOrder);
-          } catch (fireErr) {
-            handleFirestoreError(fireErr, OperationType.WRITE, `orders/${savedOrder.id}`);
-          }
-        }
-        return savedOrder;
+        return await response.json();
       }
     } catch (err) {
       console.error('Failed to create order via API:', err);
@@ -313,15 +276,7 @@ export const dbService = {
         body: JSON.stringify({ orderStatus: status }),
       });
       if (response.ok) {
-        const updated = await response.json();
-        if (isRealFirebase && db) {
-          try {
-            await updateDoc(doc(db, 'orders', id), { orderStatus: status });
-          } catch (fireErr) {
-            handleFirestoreError(fireErr, OperationType.UPDATE, `orders/${id}`);
-          }
-        }
-        return updated;
+        return await response.json();
       }
     } catch (err) {
       console.error('Failed to update order status:', err);
@@ -339,14 +294,6 @@ export const dbService = {
       });
       const data = await response.json();
       if (response.ok) {
-        if (isRealFirebase && db) {
-          try {
-            const emailId = email.replace(/[^a-zA-Z0-9]/g, '_');
-            await setDoc(doc(db, 'newsletters', emailId), { email });
-          } catch (fireErr) {
-            handleFirestoreError(fireErr, OperationType.WRITE, `newsletters/${email}`);
-          }
-        }
         return { success: true, message: data.message };
       }
       return { success: false, message: data.error || 'Failed to subscribe.' };

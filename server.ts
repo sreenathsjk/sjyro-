@@ -12,6 +12,7 @@ import { getSmartSearchAI, getCompleteTheLookAI } from './src/lib/gemini';
 import { Order, Product, Review } from './src/types';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
 // Google Drive URL formatters
 function cleanImageUrl(url: string): string {
@@ -165,8 +166,33 @@ async function getNewslettersFromFirestore(): Promise<string[] | null> {
   return null;
 }
 
+async function authenticateServer() {
+  if (isRealFirebase && fireApp) {
+    const auth = getAuth(fireApp);
+    const email = '18sparweb@gmail.com';
+    const password = 'Krishika@24sjyro@18sparweb';
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log('Server authenticated successfully as admin:', email);
+    } catch (err: any) {
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.message?.includes('INVALID_LOGIN_CREDENTIALS')) {
+        console.log('Admin user not found or password incorrect on server, attempting to create/sign in...');
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          console.log('Admin user created and authenticated successfully:', email);
+        } catch (createErr) {
+          console.error('Failed to create admin user on server:', createErr);
+        }
+      } else {
+        console.error('Failed to sign in admin user on server:', err);
+      }
+    }
+  }
+}
+
 // Database Initialization
 async function initializeDatabases() {
+  await authenticateServer();
   // 1. Initialize Products
   const fireProds = await getProductsFromFirestore();
   if (fireProds && fireProds.length > 0) {
