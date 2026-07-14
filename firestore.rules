@@ -30,7 +30,11 @@ service cloud.firestore {
 
     // Check if user is a designated administrator
     function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      return isSignedIn() && (
+        request.auth.token.email == "18sparweb@gmail.com" ||
+        request.auth.token.email == "content2u.sj@gmail.com" ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
     }
 
     // 1. PRODUCTS COLLECTION

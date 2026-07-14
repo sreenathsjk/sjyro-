@@ -61,38 +61,11 @@ const pageTransition = {
 export default function App() {
   // Navigation Routing States
   const [currentView, rawSetView] = useState<string>('home'); // home | shop | collections | limited | journal | about | faq | login | checkout | account-orders | account-wishlist | account-addresses | admin
-  const [activeView, setActiveView] = useState<string>('home');
-  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
-
-  const transitionTimerRef = React.useRef<any>(null);
-  const fadeOutTimerRef = React.useRef<any>(null);
-
-  useEffect(() => {
-    if (currentView === activeView) return;
-
-    setIsTransitioning(true);
-
-    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
-    if (fadeOutTimerRef.current) clearTimeout(fadeOutTimerRef.current);
-
-    transitionTimerRef.current = setTimeout(() => {
-      setActiveView(currentView);
-      window.scrollTo(0, 0);
-
-      fadeOutTimerRef.current = setTimeout(() => {
-        setIsTransitioning(false);
-      }, 300);
-    }, 250);
-
-    return () => {
-      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
-      if (fadeOutTimerRef.current) clearTimeout(fadeOutTimerRef.current);
-    };
-  }, [currentView]);
 
   const setView = (newView: string) => {
     window.history.pushState({ view: newView }, '', '');
     rawSetView(newView);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleGoBack = () => {
@@ -362,7 +335,7 @@ export default function App() {
         <AnimatePresence mode="wait">
           
           {/* HOME VIEW */}
-          {activeView === 'home' && (
+          {currentView === 'home' && (
             <motion.div 
               key="home"
               variants={pageVariants}
@@ -411,7 +384,7 @@ export default function App() {
           )}
 
           {/* SHOP CATALOG VIEW */}
-          {activeView === 'shop' && (
+          {currentView === 'shop' && (
             <motion.div 
               key="shop"
               variants={pageVariants}
@@ -488,7 +461,7 @@ export default function App() {
           )}
 
           {/* COLLECTIONS VIEW */}
-          {activeView === 'collections' && (
+          {currentView === 'collections' && (
             <motion.div 
               key="collections"
               variants={pageVariants}
@@ -534,7 +507,7 @@ export default function App() {
           )}
 
           {/* LIMITED DROPS VIEW */}
-          {activeView === 'limited' && (
+          {currentView === 'limited' && (
             <motion.div 
               key="limited"
               variants={pageVariants}
@@ -590,7 +563,7 @@ export default function App() {
           )}
 
           {/* JOURNAL VIEW */}
-          {activeView === 'journal' && (
+          {currentView === 'journal' && (
             <motion.div 
               key="journal"
               variants={pageVariants}
@@ -630,7 +603,7 @@ export default function App() {
           )}
 
           {/* ABOUT MANIFESTO VIEW */}
-          {activeView === 'about' && (
+          {currentView === 'about' && (
             <motion.div 
               key="about"
               variants={pageVariants}
@@ -664,7 +637,7 @@ export default function App() {
           )}
 
           {/* FAQS VIEW */}
-          {activeView === 'faq' && (
+          {currentView === 'faq' && (
             <motion.div 
               key="faq"
               variants={pageVariants}
@@ -699,7 +672,7 @@ export default function App() {
           )}
 
           {/* SIGN IN / REGISTER VIEW */}
-          {activeView === 'login' && (
+          {currentView === 'login' && (
             <motion.div 
               key="login"
               variants={pageVariants}
@@ -823,7 +796,7 @@ export default function App() {
           )}
 
           {/* CHECKOUT FLOW VIEW */}
-          {activeView === 'checkout' && (
+          {currentView === 'checkout' && (
             <motion.div 
               key="checkout" 
               variants={pageVariants}
@@ -842,7 +815,7 @@ export default function App() {
           )}
 
           {/* ACCOUNT DETAILED VIEWS */}
-          {activeView.startsWith('account-') && (
+          {currentView.startsWith('account-') && (
             <motion.div 
               key="account" 
               variants={pageVariants}
@@ -857,14 +830,14 @@ export default function App() {
                 wishlist={wishlist}
                 onToggleWishlist={handleToggleWishlist}
                 setView={setView}
-                currentSubView={activeView.split('-')[1]}
+                currentSubView={currentView.split('-')[1]}
                 onQuickView={handleProductClick}
               />
             </motion.div>
           )}
 
           {/* DEV ADMIN PANEL VIEW */}
-          {activeView === 'admin' && isAdmin && (
+          {currentView === 'admin' && isAdmin && (
             <motion.div 
               key="admin" 
               variants={pageVariants}
@@ -881,7 +854,7 @@ export default function App() {
           )}
 
           {/* ATELIERS LOCATOR VIEW */}
-          {activeView === 'ateliers' && (
+          {currentView === 'ateliers' && (
             <motion.div 
               key="ateliers" 
               variants={pageVariants}
@@ -895,7 +868,7 @@ export default function App() {
           )}
 
           {/* 360° SILHOUETTE STUDIO IMMERSIVE CHAMBER */}
-          {activeView === 'silhouette' && (
+          {currentView === 'silhouette' && (
             <motion.div 
               key="silhouette" 
               variants={pageVariants}
@@ -914,7 +887,7 @@ export default function App() {
           )}
 
           {/* PRODUCT DETAILS VIEW PAGE */}
-          {activeView === 'product-details' && selectedProduct && (
+          {currentView === 'product-details' && selectedProduct && (
             <motion.div 
               key="product-details" 
               variants={pageVariants}
@@ -939,7 +912,7 @@ export default function App() {
           )}
 
           {/* AESTHETIC ESSENCE VIEW */}
-          {activeView === 'aesthetic-essence' && (
+          {currentView === 'aesthetic-essence' && (
             <motion.div 
               key="aesthetic-essence" 
               variants={pageVariants}
@@ -953,7 +926,7 @@ export default function App() {
           )}
 
           {/* VERIFIED COLLECTORS VIEW */}
-          {activeView === 'verified-collectors' && (
+          {currentView === 'verified-collectors' && (
             <motion.div 
               key="verified-collectors" 
               variants={pageVariants}
@@ -967,7 +940,7 @@ export default function App() {
           )}
 
           {/* PRESTIGE CIRCLE VIEW */}
-          {activeView === 'prestige-circle' && (
+          {currentView === 'prestige-circle' && (
             <motion.div 
               key="prestige-circle" 
               variants={pageVariants}
@@ -1152,34 +1125,6 @@ export default function App() {
         allProducts={allProducts}
         onQuickView={handleProductClick}
       />
-
-      {/* PREMIUM SEAMLESS TRANSITION OVERLAY */}
-      <AnimatePresence>
-        {isTransitioning && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.22, ease: 'easeInOut' }}
-            className="fixed inset-0 bg-white/98 backdrop-blur-md z-[9999] flex flex-col items-center justify-center pointer-events-auto"
-          >
-            <div className="flex flex-col items-center gap-4">
-              {/* Spinning luxury loading element */}
-              <div className="relative w-12 h-12 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border border-black/5 animate-ping" />
-                <div className="absolute inset-1 rounded-full border border-black/15 animate-spin" style={{ animationDuration: '3s' }} />
-                <span className="font-serif-lux font-bold text-[14px] tracking-[0.3em] pl-1 text-black">S</span>
-              </div>
-              <div className="flex flex-col items-center gap-1.5 text-center">
-                <span className="font-serif-lux text-xs tracking-[0.4em] uppercase text-black font-semibold">SJYRO</span>
-                <span className="text-[7px] tracking-[0.5em] uppercase text-black/35 font-mono">LOADING PRESTIGE WARDROBE</span>
-              </div>
-              {/* Subtle accent bar */}
-              <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-black/20 to-transparent mt-2" />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Scroll to Top floating widget */}
       <AnimatePresence>

@@ -1,9 +1,11 @@
 {
-  "apiKey": "DUMMY_KEY",
-  "authDomain": "sjyro-dummy.firebaseapp.com",
-  "projectId": "sjyro-dummy",
-  "storageBucket": "sjyro-dummy.appspot.com",
-  "messagingSenderId": "12345678",
-  "appId": "1:12345678:web:12345",
-  "firestoreDatabaseId": "(default)"
+  "projectId": "gen-lang-client-0904076398",
+  "appId": "1:286490499933:web:d8f62500439d5a8359e6b4",
+  "apiKey": "AIzaSyCqgA3AiGVFetCUkqaTj3U-gtfzKhY7OFQ",
+  "authDomain": "gen-lang-client-0904076398.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-sjyroluxurystree-c37a8daf-e9fb-4b30-8827-0233ec021011",
+  "storageBucket": "gen-lang-client-0904076398.firebasestorage.app",
+  "messagingSenderId": "286490499933",
+  "measurementId": "",
+  "oAuthClientId": "286490499933-i03pujv24hb28qqttanfmrdm9vn2a61i.apps.googleusercontent.com"
 }

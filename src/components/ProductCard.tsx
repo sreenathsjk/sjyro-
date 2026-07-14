@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Heart, ShoppingBag, Star, Sparkles, Eye, ShieldCheck, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, ShoppingBag, Star, Sparkles, Eye, ShieldCheck, Check } from 'lucide-react';
 import { Product } from '../types';
 import { formatPrice } from '../lib/currency';
 
@@ -28,7 +28,6 @@ export default function ProductCard({
   const [hovered, setHovered] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [addedSuccess, setAddedSuccess] = useState(false);
-  const [currentImgIndex, setCurrentImgIndex] = useState(0);
 
   // Stock indicator status
   const isLowStock = product.stock > 0 && product.stock <= 10;
@@ -39,20 +38,6 @@ export default function ProductCard({
     setAddedSuccess(true);
     setQuickAddOpen(false);
     setTimeout(() => setAddedSuccess(false), 2000);
-  };
-
-  const handleNextImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (product.images.length > 1) {
-      setCurrentImgIndex((prev) => (prev + 1) % product.images.length);
-    }
-  };
-
-  const handlePrevImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (product.images.length > 1) {
-      setCurrentImgIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
-    }
   };
 
   return (
@@ -102,51 +87,12 @@ export default function ProductCard({
         className="relative aspect-[3/4] bg-[#F3F3F3] cursor-pointer overflow-hidden"
       >
         <img 
-          src={product.images[currentImgIndex] || product.images[0]} 
+          src={hovered && product.images[1] ? product.images[1] : product.images[0]} 
           alt={product.name} 
-          className="w-full h-full object-cover transition-transform duration-1000 ease-out transform group-hover:scale-[1.03]"
+          className="w-full h-full object-cover transition-all duration-700 ease-out transform group-hover:scale-105"
           referrerPolicy="no-referrer"
           loading="lazy"
         />
-
-        {/* Next / Prev Image Controls */}
-        {product.images && product.images.length > 1 && (
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2.5 z-30 pointer-events-none">
-            <button
-              onClick={handlePrevImage}
-              className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm border border-black/5 flex items-center justify-center text-black/70 hover:text-black hover:bg-white shadow-md pointer-events-auto transition-all duration-300 transform -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
-              title="Previous Image"
-            >
-              <ChevronLeft className="w-4.5 h-4.5" />
-            </button>
-            <button
-              onClick={handleNextImage}
-              className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm border border-black/5 flex items-center justify-center text-black/70 hover:text-black hover:bg-white shadow-md pointer-events-auto transition-all duration-300 transform translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
-              title="Next Image"
-            >
-              <ChevronRight className="w-4.5 h-4.5" />
-            </button>
-          </div>
-        )}
-
-        {/* Carousel Dots Indicators at top center */}
-        {product.images && product.images.length > 1 && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-30 transition-opacity duration-300">
-            {product.images.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCurrentImgIndex(idx);
-                }}
-                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                  idx === currentImgIndex ? 'bg-black w-3' : 'bg-black/20 hover:bg-black/50'
-                }`}
-                title={`View image ${idx + 1}`}
-              />
-            ))}
-          </div>
-        )}
 
         {/* Quick View and Quick Add overlays */}
         <AnimatePresence>
