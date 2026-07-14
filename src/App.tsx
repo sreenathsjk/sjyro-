@@ -64,22 +64,31 @@ export default function App() {
   const [activeView, setActiveView] = useState<string>('home');
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
+  const transitionTimerRef = React.useRef<any>(null);
+  const fadeOutTimerRef = React.useRef<any>(null);
+
   useEffect(() => {
-    if (currentView !== activeView) {
-      setIsTransitioning(true);
-      const timer1 = setTimeout(() => {
-        setActiveView(currentView);
-        window.scrollTo(0, 0);
-      }, 250);
-      const timer2 = setTimeout(() => {
+    if (currentView === activeView) return;
+
+    setIsTransitioning(true);
+
+    if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+    if (fadeOutTimerRef.current) clearTimeout(fadeOutTimerRef.current);
+
+    transitionTimerRef.current = setTimeout(() => {
+      setActiveView(currentView);
+      window.scrollTo(0, 0);
+
+      fadeOutTimerRef.current = setTimeout(() => {
         setIsTransitioning(false);
-      }, 550);
-      return () => {
-        clearTimeout(timer1);
-        clearTimeout(timer2);
-      };
-    }
-  }, [currentView, activeView]);
+      }, 300);
+    }, 250);
+
+    return () => {
+      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current);
+      if (fadeOutTimerRef.current) clearTimeout(fadeOutTimerRef.current);
+    };
+  }, [currentView]);
 
   const setView = (newView: string) => {
     window.history.pushState({ view: newView }, '', '');
