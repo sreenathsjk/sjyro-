@@ -33,8 +33,16 @@ import {
   deleteDoc, 
   onSnapshot, 
   query, 
-  where 
+  where,
+  setLogLevel
 } from 'firebase/firestore';
+
+// Silence internal Firestore SDK log messages (such as benign idle stream disconnects)
+try {
+  setLogLevel('silent');
+} catch (e) {
+  // Ignore fallback if any
+}
 import firebaseConfig from '../../firebase-applet-config.json';
 import { Product, Order, Review } from '../types';
 import { cleanProduct, cleanImageUrl } from './driveImageHelper';

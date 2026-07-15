@@ -27,7 +27,14 @@ import { mockProducts } from './src/db/mockData';
 import { getSmartSearchAI, getCompleteTheLookAI } from './src/lib/gemini';
 import { Order, Product, Review } from './src/types';
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { initializeFirestore, collection, doc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+import { initializeFirestore, collection, doc, getDocs, setDoc, deleteDoc, setLogLevel } from 'firebase/firestore';
+
+// Silence internal Firestore SDK log messages (such as benign idle stream disconnects)
+try {
+  setLogLevel('silent');
+} catch (e) {
+  // Ignore fallback if any
+}
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
 // Google Drive URL formatters

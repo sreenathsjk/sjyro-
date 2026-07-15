@@ -981,7 +981,7 @@ export default function App() {
               Beyond Trends. Built For Legacy. Premium garments engineered with drop shoulder silhouettes and heavy weight loopbacks.
             </p>
             <div className="flex gap-4 items-center text-white/40 mt-2">
-              <a href="#" className="hover:text-luxury-accent transition-colors"><Instagram className="w-4 h-4" /></a>
+              <a href="https://www.instagram.com/_sjyro_?igsh=N3cwaHJwYjdlcWhn" target="_blank" rel="noopener noreferrer" className="hover:text-luxury-accent transition-colors"><Instagram className="w-4 h-4" /></a>
               <a href="#" className="hover:text-luxury-accent transition-colors"><Twitter className="w-4 h-4" /></a>
               <a href="#" className="hover:text-luxury-accent transition-colors"><Facebook className="w-4 h-4" /></a>
             </div>
