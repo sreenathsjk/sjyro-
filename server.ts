@@ -11,7 +11,7 @@ import { mockProducts } from './src/db/mockData';
 import { getSmartSearchAI, getCompleteTheLookAI } from './src/lib/gemini';
 import { Order, Product, Review } from './src/types';
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+import { initializeFirestore, collection, doc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
 // Google Drive URL formatters
@@ -74,7 +74,9 @@ let fireDb: any = null;
 if (isRealFirebase) {
   try {
     fireApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-    fireDb = getFirestore(fireApp, firebaseConfig.firestoreDatabaseId);
+    fireDb = initializeFirestore(fireApp, {
+      experimentalForceLongPolling: true
+    }, firebaseConfig.firestoreDatabaseId);
     console.log('Firebase initialized successfully in server.ts');
   } catch (err) {
     console.error('Failed to initialize Firebase in server.ts:', err);
