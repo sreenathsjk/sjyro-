@@ -96,7 +96,16 @@ export default function Hero({ setView, onOpenSearch }: HeroProps) {
         onClick={() => {
           const exploreEl = document.getElementById('discover-legacy');
           if (exploreEl) {
-            exploreEl.scrollIntoView({ behavior: 'smooth' });
+            const rect = exploreEl.getBoundingClientRect();
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            // Sticky Navigation header is ~114px high.
+            // Adding an extra 38px (~1 cm) of breathing room space below the header.
+            // Total offset = 114px + 38px = 152px.
+            const targetPosition = rect.top + scrollTop - 152;
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth'
+            });
           }
         }}
       >
