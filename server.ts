@@ -6,6 +6,22 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
+
+// Intercept console.error to demote benign Firestore gRPC idle-stream disconnection logs to console.log
+const originalConsoleError = console.error;
+console.error = function (...args) {
+  const message = args.map(arg => typeof arg === 'object' ? (arg instanceof Error ? arg.message : JSON.stringify(arg)) : String(arg)).join(' ');
+  if (
+    message.includes('Disconnecting idle stream') ||
+    message.includes('Timed out waiting for new targets') ||
+    message.includes('GrpcConnection RPC') ||
+    (message.includes('CANCELLED') && message.includes('stream'))
+  ) {
+    console.log('[Firestore Info - Benign Stream Disconnect]:', ...args);
+    return;
+  }
+  originalConsoleError.apply(console, args);
+};
 import { createServer as createViteServer } from 'vite';
 import { mockProducts } from './src/db/mockData';
 import { getSmartSearchAI, getCompleteTheLookAI } from './src/lib/gemini';

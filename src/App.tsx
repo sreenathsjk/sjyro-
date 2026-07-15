@@ -972,7 +972,7 @@ export default function App() {
 
       {/* 4. LUXURY BLACK FOOTER */}
       <footer className="bg-black text-white/50 text-[11px] font-sans py-16 border-t border-white/[0.04] relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-10">
           
           {/* Col 1: Brand Info */}
           <div className="flex flex-col gap-4">
@@ -1003,19 +1003,6 @@ export default function App() {
             <button className="text-left hover:text-white transition-colors">Return Policy</button>
             <button className="text-left hover:text-white transition-colors">Terms of Service</button>
             <button className="text-left hover:text-white transition-colors">Privacy Policy</button>
-          </div>
-
-          {/* Col 4: Corporate guarantees */}
-          <div className="flex flex-col gap-3">
-            <span className="text-white text-[10px] mb-2 font-serif-lux tracking-widest uppercase font-bold">Secure Transactions</span>
-            <div className="flex gap-2 mb-2 items-center">
-              {/* Payment gateway compliance indicators */}
-              <span className="border border-white/10 px-2 py-1 text-[8px] font-mono tracking-widest uppercase text-white/30 rounded-sm font-bold">RAZORPAY SECURE</span>
-              <span className="border border-white/10 px-2 py-1 text-[8px] font-mono tracking-widest uppercase text-white/30 rounded-sm font-bold">SHIPROCKET AWB</span>
-            </div>
-            <p className="leading-relaxed text-white/30">
-              Payments processed utilizing 256-bit secure SSL certificates. Dispatches mapped instantly to Shiprocket cargo routes.
-            </p>
           </div>
         </div>
 

@@ -5,6 +5,22 @@
 
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+
+// Intercept console.error to filter out benign Firestore gRPC idle stream warnings
+const originalConsoleError = console.error;
+console.error = function (...args) {
+  const message = args.map(arg => typeof arg === 'object' ? (arg instanceof Error ? arg.message : JSON.stringify(arg)) : String(arg)).join(' ');
+  if (
+    message.includes('Disconnecting idle stream') ||
+    message.includes('Timed out waiting for new targets') ||
+    message.includes('GrpcConnection RPC') ||
+    (message.includes('CANCELLED') && message.includes('stream'))
+  ) {
+    console.log('[Firestore Info - Benign Stream Disconnect]:', ...args);
+    return;
+  }
+  originalConsoleError.apply(console, args);
+};
 import { 
   initializeFirestore, 
   collection, 
@@ -150,7 +166,16 @@ export const dbService = {
       if (response.ok) {
         const text = await response.text();
         // Check if response is HTML (which happens on static servers like Vercel with SPA fallback)
-        if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+        const trimmedLower = text.trim().toLowerCase();
+        if (
+          trimmedLower.startsWith('<!doctype') || 
+          trimmedLower.startsWith('<html') || 
+          trimmedLower.startsWith('<head') || 
+          trimmedLower.startsWith('<body') || 
+          trimmedLower.startsWith('<div') ||
+          text.includes('<!DOCTYPE') ||
+          text.includes('<html')
+        ) {
           throw new Error('Received HTML response instead of JSON. Frontend probably deployed without a running backend server.');
         }
         const prods = JSON.parse(text);
@@ -166,9 +191,16 @@ export const dbService = {
     if (isRealFirebase && db) {
       try {
         const colRef = collection(db, 'products');
-        const snapshot = await getDocs(colRef);
+        
+        // Use a timeout promise to prevent client-side hanging if Firestore is unreachable or domain blocked
+        const firestorePromise = getDocs(colRef);
+        const timeoutPromise = new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Firestore fetch timed out after 2500ms')), 2500)
+        );
+
+        const snapshot = await Promise.race([firestorePromise, timeoutPromise]) as any;
         const list: Product[] = [];
-        snapshot.forEach(docSnap => {
+        snapshot.forEach((docSnap: any) => {
           if (docSnap.exists()) {
             list.push(cleanProduct(docSnap.data() as Product));
           }
