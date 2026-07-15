@@ -63,20 +63,6 @@ export default function Navigation({
   return (
     <>
       <nav className="fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b border-black/5 bg-white/70 backdrop-blur-md">
-      {/* Top Banner (Scrolling Marquee style or Minimal Accent) */}
-      <div className="bg-black text-white text-[10px] tracking-[0.2em] uppercase py-2 px-4 flex justify-between items-center overflow-hidden">
-        <div className="flex gap-12 animate-marquee whitespace-nowrap">
-          <span>COMPLIMENTARY SHIPPING WORLDWIDE ON ORDER ABOVE $150</span>
-          <span>•</span>
-          <span>BEYOND TRENDS. BUILT FOR LEGACY.</span>
-          <span>•</span>
-          <span>LIMITED STOCK IN STOCK APPAREL - NO RESTOCKS</span>
-          <span>•</span>
-          <span>COMPLIMENTARY SHIPPING WORLDWIDE ON ORDER ABOVE $150</span>
-          <span>•</span>
-          <span>BEYOND TRENDS. BUILT FOR LEGACY.</span>
-        </div>
-      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center">
         {/* Left Side: Navigation Links (Desktop) */}

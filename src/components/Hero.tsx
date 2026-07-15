@@ -98,10 +98,10 @@ export default function Hero({ setView, onOpenSearch }: HeroProps) {
           if (exploreEl) {
             const rect = exploreEl.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            // Sticky Navigation header is ~114px high.
+            // Sticky Navigation header is now ~80px high without the top banner.
             // Adding an extra 38px (~1 cm) of breathing room space below the header.
-            // Total offset = 114px + 38px = 152px.
-            const targetPosition = rect.top + scrollTop - 152;
+            // Total offset = 80px + 38px = 118px.
+            const targetPosition = rect.top + scrollTop - 118;
             window.scrollTo({
               top: targetPosition,
               behavior: 'smooth'
